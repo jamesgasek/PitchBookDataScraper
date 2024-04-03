@@ -37,7 +37,7 @@ function ScrapePerson(row) {
     let cellText = $(`#search-results-data-table-row-${row}-cell-${cell}`)
       .first()
       .text();
-    person[`cell${cell}`] = cellText.substring(0, 100);
+    person[`cell${cell}`] = cellText.substring(0, 300);
   }
   return person;
 }
