@@ -14,8 +14,7 @@ fs.readdirSync("inputs").forEach(file => {
   console.log(file);
 });
 
-// const inputFiles = program.args.slice(0, program.args.length - 1);
-// console.log(inputFiles);
+
 const outputFile = "outputs/" + program.args[program.args.length - 1];
 console.log(outputFile);
 
@@ -30,48 +29,35 @@ function GetName(text) {
     lastName: titleAndFullName[2]
   }
   return name
-  // return text.split(' ').slice(0,3).join(' ');
 }
 
 function ScrapePerson(row) {
-  let company = $(`#search-results-data-table-row-${row}-cell-3`)
-    .first()
-    .text();
-  let position = $(`#search-results-data-table-row-${row}-cell-4`)
-    .first()
-    .text();
-  var name = $(`#search-results-data-table-row-${row}-cell-7`)
-    .first()
-    .text();
-  var title = GetName(name).title;
-  var firstName = GetName(name).firstName
-  var lastName = GetName(name).lastName
-  let email = $(`#search-results-data-table-row-${row}-cell-10`)
-    .first()
-    .text();
-  
-  let person = {
-    title,
-    firstName,
-    lastName,
-    email,
-    position,
-    company
-  };
-  console.log(person);
+  let person = {};
+  for (let cell = 0; cell <= 10; cell++) {
+    let cellText = $(`#search-results-data-table-row-${row}-cell-${cell}`)
+      .first()
+      .text();
+    person[`cell${cell}`] = cellText.substring(0, 100);
+  }
   return person;
 }
 
+
 inputFiles.forEach(inputFile => {
+  console.log(Persons.length)
+  console.log('processing' + inputFile);
   const file = fs.readFileSync(__dirname + '/' + inputFile).toString();
   $ = cheerio.load(file);
   for (let i = 0; i < 300; i++) {
     let person = ScrapePerson(i);
-    if (person == null) break;
+    if(Object.values(person).every(x => x === '')) {
+      break;
+    }
     Persons.push(person);
   }
-  Persons = Persons.filter(person => !!person.email.trim());
 });
+
+console.log(Persons.length);
 
 let csv = new ObjectsToCsv(Persons);
 
